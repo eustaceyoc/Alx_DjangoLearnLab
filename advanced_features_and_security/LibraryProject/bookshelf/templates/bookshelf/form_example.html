@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Form</title>
+</head>
+<body>
+    <h1>{% if book %}Edit Book{% else %}Create Book{% endif %}</h1>
+
+    <form method="post">
+        <!-- CSRF Token for protection against CSRF attacks -->
+        {% csrf_token %}
+
+        <!-- Display form fields with automatic rendering and validation -->
+        {{ form.as_p }}
+
+        <button type="submit">{% if book %}Update{% else %}Create{% endif %} Book</button>
+    </form>
+
+    <a href="{% url 'book_list' %}">Back to Book List</a>
+</body>
+</html>

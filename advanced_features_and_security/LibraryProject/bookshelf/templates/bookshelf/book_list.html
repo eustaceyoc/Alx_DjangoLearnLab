@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Book List</h1>
+
+    <!-- Secure search form -->
+    <form method="get" action="{% url 'book_list' %}">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="Search books...">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <ul>
+        {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong> by {{ book.author }}
+                {% if book.description %}
+                    <p>{{ book.description }}</p>
+                {% endif %}
+                <small>Created by: {{ book.created_by.email }}</small>
+
+                {% if perms.bookshelf.can_edit_book and book.created_by == user or user.is_superuser %}
+                    <a href="{% url 'book_edit' book.id %}">Edit</a>
+                {% endif %}
+
+                {% if perms.bookshelf.can_delete_book and book.created_by == user or user.is_superuser %}
+                    <form method="post" action="{% url 'book_delete' book.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this book?')">Delete</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No books found.</li>
+        {% endfor %}
+    </ul>
+
+    {% if perms.bookshelf.can_create_book %}
+        <a href="{% url 'book_create' %}">Create New Book</a>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
