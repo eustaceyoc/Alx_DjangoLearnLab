@@ -28,10 +28,11 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-class Article(models.Model):
+class Book(models.Model):
     title = models.CharField(max_length=255)
-    content = models.TextField()
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.CharField(max_length=255)
+    published_date = models.DateField()
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         permissions = [
