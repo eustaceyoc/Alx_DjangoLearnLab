@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=k3i&s-#vh*tll^b&+%&zns(rqh_3^_*k!_ajb4^#$q*c#kjn*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # Set to False for production
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'yourdomain.com']
 
 ALLOWED_HOSTS = []
 
@@ -117,4 +120,113 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Custom user model
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# SECURITY SETTINGS CONFIGURATION
+# These settings enhance application security by enabling various protections
+
+# HTTPS CONFIGURATION - Step 1: Configure Django for HTTPS Support
+
+# Redirect all non-HTTPS requests to HTTPS
+# SECURITY: Ensures all traffic uses encrypted HTTPS connections
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS) settings
+# SECURITY: Instructs browsers to only access the site via HTTPS for the specified time
+SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+
+# SECURITY: Include all subdomains in the HSTS policy
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# SECURITY: Allow preloading of HSTS policy in browser preload lists
+SECURE_HSTS_PRELOAD = True
+
+# SECURITY: Configure proxy SSL header for detecting HTTPS behind proxy
+# This tells Django to look for the X-Forwarded-Proto header to detect HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Step 2: Enforce Secure Cookies
+
+# SECURITY: Ensure session cookies are only transmitted over HTTPS
+SESSION_COOKIE_SECURE = True
+
+# SECURITY: Ensure CSRF cookies are only transmitted over HTTPS
+CSRF_COOKIE_SECURE = True
+
+# Step 3: Implement Secure Headers
+
+# SECURITY: Prevent XSS attacks by enabling browser's XSS filtering
+SECURE_BROWSER_XSS_FILTER = True
+
+# SECURITY: Prevent clickjacking by denying framing of the site
+X_FRAME_OPTIONS = 'DENY'
+
+# SECURITY: Prevent MIME type sniffing which could lead to XSS
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Additional security headers
+# SECURITY: Set Referrer Policy to enhance privacy and security
+SECURE_REFERRER_POLICY = 'same-origin'
+
+
+# DEPLOYMENT CONFIGURATION FOR HTTPS
+#
+# For production deployment with HTTPS, you need to configure your web server
+# to handle SSL/TLS certificates. Below are examples for common web servers:
+#
+# IMPORTANT: When using a reverse proxy (like Nginx or Apache), ensure they set
+# the X-Forwarded-Proto header so Django can properly detect HTTPS connections.
+#
+# NGINX Configuration Example:
+#
+# server {
+#     listen 443 ssl http2;
+#     server_name yourdomain.com;
+#
+#     ssl_certificate /path/to/your/certificate.crt;
+#     ssl_certificate_key /path/to/your/private.key;
+#     ssl_protocols TLSv1.2 TLSv1.3;
+#     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
+#
+#     location / {
+#         proxy_pass http://127.0.0.1:8000;
+#         proxy_set_header Host $host;
+#         proxy_set_header X-Real-IP $remote_addr;
+#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;  # IMPORTANT: This tells Django it's HTTPS
+#     }
+# }
+#
+# server {
+#     listen 80;
+#     server_name yourdomain.com;
+#     return 301 https://$server_name$request_uri;
+# }
+#
+# Apache Configuration Example:
+#
+# <VirtualHost *:443>
+#     ServerName yourdomain.com
+#     SSLEngine on
+#     SSLCertificateFile /path/to/your/certificate.crt
+#     SSLCertificateKeyFile /path/to/your/private.key
+#
+#     ProxyPreserveHost On
+#     ProxyPass / http://127.0.0.1:8000/
+#     ProxyPassReverse / http://127.0.0.1:8000/
+#     RequestHeader set X-Forwarded-Proto "https"  # IMPORTANT: This tells Django it's HTTPS
+# </VirtualHost>
+#
+# <VirtualHost *:80>
+#     ServerName yourdomain.com
+#     Redirect permanent / https://yourdomain.com/
+# </VirtualHost>
