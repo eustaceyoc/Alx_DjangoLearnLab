@@ -4,8 +4,59 @@
 
 <p>Author: {{ object.author }}</p>
 
-<a href="{% url 'post-update' object.id %}">Edit</a>
 
-<a href="{% url 'post-delete' object.id %}">Delete</a>
+<hr>
 
-<a href="{% url 'post-list' %}">Back</a>
+<h2>Comments</h2>
+
+
+{% for comment in object.comments.all %}
+
+<p>
+
+<strong>{{ comment.author }}</strong>
+
+{{ comment.content }}
+
+<br>
+
+{% if user == comment.author %}
+
+<a href="{% url 'edit-comment' comment.id %}">Edit</a>
+
+<a href="{% url 'delete-comment' comment.id %}">Delete</a>
+
+{% endif %}
+
+</p>
+
+{% empty %}
+
+<p>No comments yet.</p>
+
+{% endfor %}
+
+
+<hr>
+
+{% if user.is_authenticated %}
+
+<h3>Add Comment</h3>
+
+<form method="POST" action="{% url 'add-comment' object.id %}">
+
+{% csrf_token %}
+
+<textarea name="content" required></textarea>
+
+<br>
+
+<button type="submit">Submit</button>
+
+</form>
+
+{% else %}
+
+<p>You must log in to comment.</p>
+
+{% endif %}

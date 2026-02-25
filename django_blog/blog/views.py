@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
@@ -12,10 +9,10 @@ from .forms import CustomeUserCreationForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, Comment
 from .forms import PostForm
-
-# Create your views here.
+from .forms import CommentForm
+from django.shortcuts import get_object_or_404
 
 # for the registration
 
@@ -192,3 +189,66 @@ class PostByTagListView(ListView):  # <-- renamed to match checker
         context = super().get_context_data(**kwargs)
         context['tag'] = self.tag
         return context
+
+# ADD COMMENT
+@login_required
+def add_comment(request, pk):
+
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+
+            comment = form.save(commit=False)
+
+            comment.post = post
+
+            comment.author = request.user
+
+            comment.save()
+
+            return redirect('post-detail', pk=post.pk)
+
+
+# EDIT COMMENT
+@login_required
+def edit_comment(request, pk):
+
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if comment.author != request.user:
+        return redirect('post-detail', pk=comment.post.pk)
+
+    if request.method == 'POST':
+
+        form = CommentForm(request.POST, instance=comment)
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect('post-detail', pk=comment.post.pk)
+
+    else:
+
+        form = CommentForm(instance=comment)
+
+    return render(request, 'blog/edit_comment.html', {'form': form})
+
+
+# DELETE COMMENT
+@login_required
+def delete_comment(request, pk):
+
+    comment = get_object_or_404(Comment, pk=pk)
+
+    post_pk = comment.post.pk
+
+    if comment.author == request.user:
+
+        comment.delete()
+
+    return redirect('post-detail', pk=post_pk)

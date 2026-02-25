@@ -33,3 +33,23 @@ from .views import PostByTagListView
 urlpatterns += [
     path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),
 ]
+
+# Comment URLs
+
+path(
+    'posts/<int:pk>/comment/',
+    views.add_comment,
+    name='add-comment'
+),
+
+path(
+    'comment/<int:pk>/edit/',
+    views.edit_comment,
+    name='edit-comment'
+),
+
+path(
+    'comment/<int:pk>/delete/',
+    views.delete_comment,
+    name='delete-comment'
+),
