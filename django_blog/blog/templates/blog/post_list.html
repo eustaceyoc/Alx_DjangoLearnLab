@@ -1,0 +1,17 @@
+<h1>Blog Posts</h1>
+
+<a href="{% url 'post-create' %}">New Post</a>
+
+{% for post in posts %}
+
+    <h2>
+        <a href="{% url 'post-detail' post.id %}">
+            {{ post.title }}
+        </a>
+    </h2>
+
+    <p>{{ post.content|truncatewords:20 }}</p>
+
+    <p>By {{ post.author }}</p>
+
+{% endfor %}
