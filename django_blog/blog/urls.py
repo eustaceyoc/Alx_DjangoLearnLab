@@ -53,3 +53,15 @@ path(
     views.delete_comment,
     name='delete-comment'
 ),
+
+path(
+    'search/',
+    views.search_posts,
+    name='search-posts'
+),
+
+path(
+    'tags/<str:tag_name>/',
+    views.posts_by_tag,
+    name='posts-by-tag'
+),

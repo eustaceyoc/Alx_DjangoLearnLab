@@ -1,0 +1,34 @@
+<h1>Search Results</h1>
+
+<form method="GET" action="{% url 'search-posts' %}">
+
+<input type="text" name="q" placeholder="Search...">
+
+<button type="submit">Search</button>
+
+</form>
+
+
+{% if query %}
+
+<h2>Results for "{{ query }}"</h2>
+
+{% for post in results %}
+
+<p>
+
+<a href="{% url 'post-detail' post.id %}">
+
+{{ post.title }}
+
+</a>
+
+</p>
+
+{% empty %}
+
+<p>No results found.</p>
+
+{% endfor %}
+
+{% endif %}

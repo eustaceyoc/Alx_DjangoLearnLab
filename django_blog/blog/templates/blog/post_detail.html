@@ -60,3 +60,21 @@
 <p>You must log in to comment.</p>
 
 {% endif %}
+
+<p>Tags:
+
+{% for tag in object.tags.all %}
+
+<a href="{% url 'posts-by-tag' tag.name %}">
+
+{{ tag.name }}
+
+</a>
+
+{% empty %}
+
+No tags
+
+{% endfor %}
+
+</p>

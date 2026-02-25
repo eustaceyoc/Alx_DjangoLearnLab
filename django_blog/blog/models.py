@@ -12,6 +12,9 @@ class Post(models.Model):
 
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    # MANY TO MANY RELATIONSHIP
+    tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
+    
     def __str__(self):
         return self.title
 
